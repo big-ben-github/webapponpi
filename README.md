@@ -16,13 +16,13 @@ The detailed process are as follows:
 ```
 3. run the app in different ways:
    * flask way
-```
+   ```
    export FLASK_APP=webapp
-```
+   ```
    * with manage.py
-```
+   ```
    python manage.py
-```
+   ```
    * with VSCode, open it and run
 
 ### package the source code
