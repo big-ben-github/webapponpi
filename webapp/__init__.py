@@ -36,3 +36,6 @@ def create_app(config_name=None):
         app.register_blueprint(import_string(blueprint))
 
     return app
+
+# if you use uWSGI to run the app, uncomment line below
+# app = create_app()
