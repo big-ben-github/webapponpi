@@ -8,11 +8,11 @@ The detailed process are as follows:
 
 1. clone the repository and create the virtual environment with venv or virtualenv, then activate it:
 ```
-   python -m venv venv/ && . venv/bin/activate
+python -m venv venv/ && . venv/bin/activate
 ```
 2. install flask package:
 ```
-   pip install flask
+pip install flask
 ```
 3. run the app in different ways:
    * flask way
@@ -39,3 +39,14 @@ pip install xxx.whl
 
 ### run on the Raspberry-Pi
 
+1. create the virtual environment and activate it, put the source code or install the .whl file on raspberry-pi;
+
+2. install the uWSGI as web server within virtual environment and configure it;
+
+3. install the Nginx as Reverse proxy server and configure it;
+
+4. Connect raspberry-pi and LED with pin-7 and pin-GND(WiringPi coding form);
+
+5. run the webserver(uncomment the code in webapp__init__.py) and configure the raspberry-pi network with static ip;
+
+6. input the ip address on your phone and turn the LED on or off :wink:
