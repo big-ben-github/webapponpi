@@ -79,6 +79,13 @@ sudo service nginx start
 
 4. Connect raspberry-pi and LED with pin-7 and pin-GND(WiringPi coding form);
 
-5. run the webserver and configure the raspberry-pi network with static ip;
+5. run the webserver and configure the raspberry-pi network with static ip at /etc/dhcpcd.conf like:
+```
+interface wlan0
 
-6. input the ip address on your phone and turn the LED on or off :wink:
+static ip_address=192.168.0.200/24
+static routers=192.168.0.1
+static domain_name_servers=192.168.0.1
+```
+
+6. input the ip address and port on your phone browser and turn the LED on or off :wink:
