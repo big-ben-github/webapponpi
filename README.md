@@ -54,6 +54,10 @@ callable = app
 processes = 4
 threads = 2
 ```
+then start the uwsgi server;
+```
+uwsgi -i flask_uwsgi.ini
+```
 
 3. install the Nginx as Reverse proxy server and configure it;
 ```
@@ -68,13 +72,13 @@ server {
     }
 }
 ```
-
+put the configure at /etc/nginx/conf.d/ and start the nginx;
+```
+sudo service nginx start
+```
 
 4. Connect raspberry-pi and LED with pin-7 and pin-GND(WiringPi coding form);
 
-5. run the webserver(uncomment the code in webapp__init__.py) and configure the raspberry-pi network with static ip;
-```
-app = create_app()
-```
+5. run the webserver and configure the raspberry-pi network with static ip;
 
 6. input the ip address on your phone and turn the LED on or off :wink:
