@@ -38,9 +38,14 @@
                     <div class="background">
                         <img src="/static/images/office.jpg">
                     </div>
-                    <a href="#user"><img class="circle" src="/static/images/user.png"></a>
+
+                    <a href="#userloginmodal" class="modal-trigger"><img class="circle"
+                            src="/static/images/user.png"></a>
+
                     <a href="#name"><span class="white-text name">John Doe</span></a>
+
                     <a href="#email"><span class="white-text email">jdandturk@gmail.com</span></a>
+
                 </div>
             </li>
             <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
@@ -125,6 +130,58 @@
         </div>
 
     </section>
+
+    <!-- Modal Structure -->
+    <div id="userloginmodal" class="modal">
+        <div class="row">
+            <div class="card">
+                <div class="card-tabs col s12">
+                    <ul class="tabs tabs-fixed-width grey lighten-4">
+                        <li class="tab"><a class="active" href="#logintab">Login</a></li>
+                        <li class="tab"><a href="#registertab">Register</a></li>
+                    </ul>
+                </div>
+
+                <div class="card-content col s12">
+                    <div id="logintab">
+                        <form>
+                            <label for="loginusername">Username</label>
+                            <input name="loginusername" id="loginusername" required>
+                            <label for="loginpassword">Password</label>
+                            <input type="password" name="loginpassword" id="loginpassword" required>
+                            <div style="margin-bottom:10px"></div>
+
+                            <div class="col s6">
+                                <input type="submit" class="waves-effect waves-teal btn teal lighten-5" value="login">
+                            </div>
+                            <div class="col s6">
+                                <input type="submit" class="modal-close waves-effect waves-teal btn teal lighten-5"
+                                    value="cancel">
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="registertab">
+                        <form>
+                            <label for="registerusername">Username</label>
+                            <input name="registerusername" id="registerusername" required>
+                            <label for="registerpassword">Password</label>
+                            <input type="password" name="registerpassword" id="registerpassword" required>
+                            <div style="margin-bottom:10px"></div>
+
+                            <div class="col s6">
+                                <input type="submit" class="waves-effect waves-teal btn teal lighten-5" value="register">
+                            </div>
+                            <div class="col s6">
+                                <input type="submit" class="modal-close waves-effect waves-teal btn teal lighten-5"
+                                    value="cancel">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer></footer>
 
