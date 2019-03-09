@@ -28,22 +28,24 @@ def load_logged_in_user():
         ).fetchone()
 
 
-@indexblueprint.route('/register', methods=('GET', 'POST'))
+@indexblueprint.route('/register', methods=['POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.json['username']
+        password = request.json['password']
+        print('registerusername:', username, 'registerpassword:', password)
+
         db = get_db()
         error = None
 
-        if not username:
-            error = 'Username is required.'
-        elif not password:
-            error = 'Password is required.'
-        elif db.execute(
+        if db.execute(
             'SELECT id FROM user WHERE username = ?', (username,)
         ).fetchone() is not None:
-            error = 'User {} is already registered.'.format(username)
+            error = 'Register failed: Username ({}) used.'.format(username)
+        elif not username:
+            error = 'Register failed: Username Null.'
+        elif not password:
+            error = 'Register failed: Password Null.'
 
         if error is None:
             db.execute(
@@ -51,18 +53,19 @@ def register():
                 (username, generate_password_hash(password))
             )
             db.commit()
-            return redirect(url_for('index.login'))
+            return jsonify({'result': 'OK'})
 
-        flash(error)
+        return jsonify({'result': error})
+    return jsonify({'result': 'Register failed: Wrong request.'})
 
-    return render_template('register.html')
 
-
-@indexblueprint.route('/login', methods=('GET', 'POST'))
+@indexblueprint.route('/login', methods=['POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.json['username']
+        password = request.json['password']
+        print('loginusername:', username, 'loginpassword:', password)
+
         db = get_db()
         error = None
         user = db.execute(
@@ -77,12 +80,11 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            flash('You were successfully logged in')
-            return redirect(url_for('index.index'))
+            return jsonify({'result': 'OK'})
 
-        flash(error)
+        return jsonify({'result': 'Login failed: ' + error})
 
-    return render_template('login.html')
+    return jsonify({'result': 'Login failed: Wrong request.'})
 
 
 @indexblueprint.route('/logout')
@@ -98,7 +100,6 @@ def index():
 
 @indexblueprint.route('/toggleled', methods=['POST'])
 def toggleled():
-    print('here1')
     if request.method == 'POST':
         ledstatus = request.json['status']
         print('led status is %d' % ledstatus)
@@ -108,4 +109,4 @@ def toggleled():
         else:
             if 0 == led.toggle('OFF'):
                 return jsonify({'result': 'OFF'})
-    return {'result': 'fail'}
+    return jsonify({'result': 'fail'})

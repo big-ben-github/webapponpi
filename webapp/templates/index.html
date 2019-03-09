@@ -137,46 +137,60 @@
             <div class="card">
                 <div class="card-tabs col s12">
                     <ul class="tabs tabs-fixed-width grey lighten-4">
-                        <li class="tab"><a class="active" href="#logintab">Login</a></li>
-                        <li class="tab"><a href="#registertab">Register</a></li>
+                        <li class="tab"><a id="tab1" class="active" href="#logintab">Login</a></li>
+                        <li class="tab"><a id="tab2" href="#registertab">Register</a></li>
                     </ul>
                 </div>
 
                 <div class="card-content col s12">
                     <div id="logintab">
-                        <form>
-                            <label for="loginusername">Username</label>
-                            <input name="loginusername" id="loginusername" required>
-                            <label for="loginpassword">Password</label>
-                            <input type="password" name="loginpassword" id="loginpassword" required>
-                            <div style="margin-bottom:10px"></div>
+                        <form id="loginform" action="javascript:loginfunc()" method="POST">
+                            <label>
+                                Username<input id="loginusername" required>
+                            </label>
+                            <label>
+                                Password<input type="password" id="loginpassword" required>
+                            </label>
+                            <div style="margin-bottom:8px"></div>
 
                             <div class="col s6">
                                 <input type="submit" class="waves-effect waves-teal btn teal lighten-5" value="login">
                             </div>
                             <div class="col s6">
-                                <input type="submit" class="modal-close waves-effect waves-teal btn teal lighten-5"
+                                <input type="button" class="modal-close waves-effect waves-teal btn teal lighten-5"
                                     value="cancel">
                             </div>
                         </form>
+                        <div class="col" id="loginres"
+                            style="padding:0; margin-top:6px; margin-bottom:-20px; text-align:center;">
+                        </div>
                     </div>
 
                     <div id="registertab">
-                        <form>
-                            <label for="registerusername">Username</label>
-                            <input name="registerusername" id="registerusername" required>
-                            <label for="registerpassword">Password</label>
-                            <input type="password" name="registerpassword" id="registerpassword" required>
-                            <div style="margin-bottom:10px"></div>
+                        <form id="registerform" action="javascript:registerfunc()" method="POST">
+                            <label>
+                                Username<input id="regusername" required>
+                            </label>
+                            <label>
+                                Password<input type="password" id="regpassword" required>
+                            </label>
+                            <label>
+                                Confirm Password<input type="password" id="regrepassword" required>
+                            </label>
+                            <div style="margin-bottom:8px"></div>
 
                             <div class="col s6">
-                                <input type="submit" class="waves-effect waves-teal btn teal lighten-5" value="register">
+                                <input type="submit" class="waves-effect waves-teal btn teal lighten-5"
+                                    value="register">
                             </div>
                             <div class="col s6">
-                                <input type="submit" class="modal-close waves-effect waves-teal btn teal lighten-5"
+                                <input type="button" class="modal-close waves-effect waves-teal btn teal lighten-5"
                                     value="cancel">
                             </div>
                         </form>
+                        <div class="col" id="registerres"
+                            style="padding:0; margin-top:6px; margin-bottom:-20px; text-align:center;">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -189,21 +203,74 @@
     <script type="text/javascript" src="/static/js/materialize.min.js"></script>
     <script>
         M.AutoInit();
+        var xhr = new XMLHttpRequest();
+
         var ledstatus = false;
         function toggleled() {
             ledstatus = !ledstatus;
-            var xhr = new XMLHttpRequest();
             xhr.open('post', "{{ url_for('index.toggleled') }}");
             xhr.setRequestHeader("Content-type", "application/json");
             xhr.send(JSON.stringify({ 'status': ledstatus }));
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
-                    console.log(xhr.responseText);
+                    //console.log(xhr.responseText);
                     var responsedata = JSON.parse(xhr.responseText);
                     if (responsedata != 'fail') {
                         document.getElementById('togglebutton').innerHTML = responsedata.result;
                         document.getElementById('ledimage').src
                             = (responsedata.result == 'O N') ? "static/images/ledon.png" : "static/images/ledoff.png";
+                    }
+                }
+            };
+        }
+
+        function loginfunc() {
+            var username = document.getElementById('loginusername').value;
+            var password = document.getElementById('loginpassword').value;
+            // pre-process 'username' & 'password' TBD
+            xhr.open('post', "{{ url_for('index.login') }}");
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.send(JSON.stringify({ 'username': username, 'password': password }));
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var res = JSON.parse(xhr.responseText)['result'];
+                    if (res === 'OK') {
+                        window.location.href = "{{ url_for('index.index') }}";
+                    }
+                    else {
+                        document.getElementById('loginres').innerHTML = res;
+                    }
+                }
+            };
+        }
+
+        function registerfunc() {
+            var username = document.getElementById('regusername');
+            var password = document.getElementById('regpassword');
+            var repassword = document.getElementById('regrepassword');
+            if (password.value !== repassword.value) {
+                password.value = '';
+                repassword.value = '';
+                document.getElementById('registerres').innerHTML = 'Confirm your password again.';
+                return;
+            }
+            xhr.open('post', "{{ url_for('index.register') }}");
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.send(JSON.stringify({
+                'username': username.value,
+                'password': password.value,
+            }));
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var res = JSON.parse(xhr.responseText)['result'];
+                    if (res === 'OK') {
+                        document.getElementById('registerform').reset();
+                        document.getElementById('tab1').click();
+                        document.getElementById('loginres').innerHTML = 'Register OK: login now.';
+                    }
+                    else {
+                        document.getElementById('registerform').reset();
+                        document.getElementById('registerres').innerHTML = res;
                     }
                 }
             };
