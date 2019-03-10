@@ -11,7 +11,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for('index.login'))
+            return #redirect(url_for('index.login'))
         return view(**kwargs)
     return wrapped_view
 
@@ -66,16 +66,16 @@ def login():
         password = request.json['password']
         print('loginusername:', username, 'loginpassword:', password)
 
-        db = get_db()
         error = None
-        user = db.execute(
+        user = get_db().execute(
             'SELECT * FROM user WHERE username = ?', (username,)
         ).fetchone()
-
         if user is None:
             error = 'Incorrect username.'
         elif not check_password_hash(user['password'], password):
             error = 'Incorrect password.'
+        elif g.user is not None:
+            error = 'You have logined.'
 
         if error is None:
             session.clear()
@@ -88,6 +88,7 @@ def login():
 
 
 @indexblueprint.route('/logout')
+@login_required
 def logout():
     session.clear()
     return redirect(url_for('index.index'))
@@ -99,6 +100,7 @@ def index():
 
 
 @indexblueprint.route('/toggleled', methods=['POST'])
+@login_required
 def toggleled():
     if request.method == 'POST':
         ledstatus = request.json['status']

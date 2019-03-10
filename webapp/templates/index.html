@@ -15,22 +15,20 @@
 
 <body>
     <header>
-        <div class="navbar-fixed">
-            <nav class="nav-extended teal lighten-2">
-                <div class="nav-wrapper teal lighten-2">
-                    <a href="#" class="brand-logo">HOME IOT</a>
-                    <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-                </div>
-                <div class="nav-content">
-                    <ul class="tabs tabs-transparent">
-                        <li class="tab"><a class="active" href="#test1">INDEX</a></li>
-                        <li class="tab"><a href="#test2">NULL</a></li>
-                        <li class="tab"><a href="#test3">NULL</a></li>
-                        <li class="tab"><a href="#test4">NULL</a></li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
+        <nav class="nav-extended navbar-fixed teal lighten-2">
+            <div class="nav-wrapper teal lighten-2">
+                <a href="#" class="brand-logo">Home Iot</a>
+                <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            </div>
+            <div class="nav-content">
+                <ul class="tabs tabs-transparent">
+                    <li class="tab"><a href="#test1" class="active">INDEX</a></li>
+                    <li class="tab"><a href="#test2">NULL</a></li>
+                    <li class="tab"><a href="#test3">NULL</a></li>
+                    <li class="tab"><a href="#test4">NULL</a></li>
+                </ul>
+            </div>
+        </nav>
 
         <ul id="slide-out" class="sidenav">
             <li>
@@ -39,30 +37,39 @@
                         <img src="/static/images/office.jpg">
                     </div>
 
-                    <a href="#userloginmodal" class="modal-trigger"><img class="circle"
-                            src="/static/images/user.png"></a>
+                    {% if g.user %}
+                    <a href="#logoutmodal" class="modal-trigger">
+                        <img class="circle" src="/static/images/useravatar.png">
+                    </a>
+                    <a href="#" class="white-text name">
+                        <h5>{{ g.user['username'] }}</h5>
+                    </a>
+                    <a class="white-text email">no email</a>
 
-                    <a href="#name"><span class="white-text name">John Doe</span></a>
-
-                    <a href="#email"><span class="white-text email">jdandturk@gmail.com</span></a>
-
+                    {% else %}
+                    <a href="#loginmodal" class="modal-trigger">
+                        <img class="circle" src="/static/images/user.png">
+                    </a>
+                    <a href="#" class="white-text name">
+                        <h5>anybody</h5>
+                    </a>
+                    <a class="white-text email">any email</a>
+                    {% endif %}
                 </div>
             </li>
-            <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
-            <li><a href="#!">Second Link</a></li>
+            <li><a href="#" class="waves-effect">First Link With Icon</a></li>
+            <li><a href="#" class="waves-effect">Second Link</a></li>
             <li>
                 <div class="divider"></div>
             </li>
             <li><a class="subheader">Subheader</a></li>
             <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
         </ul>
-        <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-
-        <br /><br />
     </header>
 
     <section>
         <div id="test1" class="col s12">
+            {% if g.user %}
             <div class="container">
                 <div class="card horizontal">
                     <div class="card-image">
@@ -81,6 +88,14 @@
                     </div>
                 </div>
             </div>
+            {% else %}
+            <div class="container">
+                <br /><br />
+                <p class="grey-text lighten-3" style="font-size:20px; text-align:center">
+                    You need login to access functions.
+                </p>
+            </div>
+            {% endif %}
         </div>
 
         <div id="test2" class="row">
@@ -131,8 +146,24 @@
 
     </section>
 
-    <!-- Modal Structure -->
-    <div id="userloginmodal" class="modal">
+    {% if g.user %}
+    <!-- Logout Modal-->
+    <div id="logoutmodal" class="modal row">
+        <div class="modal-content col s12">
+            <h5>Do you want to logout?</h5>
+        </div>
+        <div class="modal-footer col s12">
+            <a class="col s4"></a>
+            <a href="{{ url_for('index.logout') }}" class="waves-effect waves-teal btn-flat col s4"
+                style="text-align:center">
+                logout
+            </a>
+            <a class="modal-close waves-effect waves-teal btn-flat col s4" style="text-align:center">cancel</a>
+        </div>
+    </div>
+    {% else %}
+    <!-- Login Modal-->
+    <div id="loginmodal" class="modal">
         <div class="row">
             <div class="card">
                 <div class="card-tabs col s12">
@@ -196,6 +227,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <footer></footer>
 
@@ -275,6 +307,7 @@
                 }
             };
         }
+
     </script>
 </body>
 
