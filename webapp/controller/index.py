@@ -2,7 +2,7 @@ import functools
 from flask import flash, g, redirect, render_template, request, session, url_for, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 from webapp.model.db import get_db
-from webapp.raspberry import led
+from webapp.devices import devices
 from . import indexblueprint
 
 
@@ -11,7 +11,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return #redirect(url_for('index.login'))
+            return  # redirect(url_for('index.login'))
         return view(**kwargs)
     return wrapped_view
 
@@ -99,16 +99,14 @@ def index():
     return render_template('index.html')
 
 
-@indexblueprint.route('/toggleled', methods=['POST'])
+@indexblueprint.route('/lampcontrol', methods=['POST'])
 @login_required
-def toggleled():
+def lampcontrol():
     if request.method == 'POST':
-        ledstatus = request.json['status']
-        print('led status is %d' % ledstatus)
-        if ledstatus == True:
-            if 1 == led.toggle('ON'):
-                return jsonify({'result': 'O N'})
+        lamp_op = request.json['operation']
+        print('lamp mode is to be %s' % lamp_op)
+        if devices.lampcontrol(lamp_op) is True:
+            return jsonify({'result': 'ok'})
         else:
-            if 0 == led.toggle('OFF'):
-                return jsonify({'result': 'OFF'})
+            return jsonify({'result': 'fail'})
     return jsonify({'result': 'fail'})

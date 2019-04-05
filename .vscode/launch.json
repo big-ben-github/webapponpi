@@ -46,7 +46,7 @@
             "module": "flask",
             "env": {
                 "FLASK_APP": "webapp",
-                // "FLASK_ENV":"development",
+                "FLASK_ENV":"development",
             },
             "args": [
                 "run",

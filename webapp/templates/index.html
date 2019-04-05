@@ -80,9 +80,14 @@
                             <h6>You can control the LED to turn it on or off with the button below.<h6>
                                     </h1>
                         </div>
-                        <div class="card-action">
-                            <a id="togglebutton" class="waves-effect waves-light btn" onclick="toggleled()">
+                        <div class="card-action row">
+                            <a id="lampswitch" class="waves-effect waves-light btn col s4 offset-s1"
+                                onclick="lampcontrol('switch')">
                                 OFF
+                            </a>
+                            <a id="lampmode" class="waves-effect waves-light btn cyan col s4 offset-s1"
+                                onclick="lampcontrol('mode')">
+                                MODE
                             </a>
                         </div>
                     </div>
@@ -237,20 +242,52 @@
         M.AutoInit();
         var xhr = new XMLHttpRequest();
 
-        var ledstatus = false;
-        function toggleled() {
-            ledstatus = !ledstatus;
-            xhr.open('post', "{{ url_for('index.toggleled') }}");
+        var lampstatus = false;
+        var MODEENUM = {
+            0: 'blink',
+            1: 'blinkx2',
+        };
+        var mode = 0;
+        function lampcontrol(para) {
+            var lampdata;
+            if (para == 'switch') {
+                lampstatus = !lampstatus;
+                lampdata = lampstatus ? 'on' : 'off';
+            } else if (para == 'mode') {
+                if (lampstatus == false) {
+                    return;
+                }
+                lampdata = MODEENUM[mode++];
+                mode %= 2;
+            }
+            var lampswitch = document.getElementById('lampswitch');
+            var lampmode = document.getElementById('lampmode');
+            var lampimage = document.getElementById('ledimage');
+            xhr.open('post', "{{ url_for('index.lampcontrol') }}");
             xhr.setRequestHeader("Content-type", "application/json");
-            xhr.send(JSON.stringify({ 'status': ledstatus }));
+            xhr.send(JSON.stringify({ 'operation': lampdata }));
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     //console.log(xhr.responseText);
                     var responsedata = JSON.parse(xhr.responseText);
                     if (responsedata != 'fail') {
-                        document.getElementById('togglebutton').innerHTML = responsedata.result;
-                        document.getElementById('ledimage').src
-                            = (responsedata.result == 'O N') ? "static/images/ledon.png" : "static/images/ledoff.png";
+                        switch (lampdata) {
+                            case 'on':
+                                lampswitch.innerHTML = 'O N';
+                                lampimage.src = "static/images/ledon.png";
+                                break;
+                            case 'off':
+                                lampswitch.innerHTML = 'OFF';
+                                lampimage.src = "static/images/ledoff.png";
+                                lampmode.innerHTML = 'MODE';
+                                break;
+                            case 'blink':
+                            case 'blinkx2':
+                                lampmode.innerHTML = MODEENUM[mode];
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             };
