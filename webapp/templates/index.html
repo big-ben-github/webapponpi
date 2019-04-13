@@ -270,7 +270,8 @@
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     //console.log(xhr.responseText);
                     var responsedata = JSON.parse(xhr.responseText);
-                    if (responsedata != 'fail') {
+                    console.log(responsedata);
+                    if (responsedata['result'] != 'fail') {
                         switch (lampdata) {
                             case 'on':
                                 lampswitch.innerHTML = 'O N';

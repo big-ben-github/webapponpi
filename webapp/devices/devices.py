@@ -1,9 +1,17 @@
-
+import json
+from . import unixsocket
 
 def lampcontrol(operation):
+    message = {'device': 'lamp',
+               'operation': operation}
+    print('******sending message with unix socket******')
+    echo = unixsocket.clientsocket(json.dumps(message))
+    print('******received {} with unix socket******', echo)
+    if json.loads(echo)['res'] == 'ok':
+        return True
+    else:
+        return False
 
-    res = False
-    return res
 
 '''
 from ctypes import CDLL

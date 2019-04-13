@@ -105,7 +105,7 @@ def lampcontrol():
     if request.method == 'POST':
         lamp_op = request.json['operation']
         print('lamp mode is to be %s' % lamp_op)
-        if devices.lampcontrol(lamp_op) is True:
+        if devices.lampcontrol(lamp_op) == True:
             return jsonify({'result': 'ok'})
         else:
             return jsonify({'result': 'fail'})
