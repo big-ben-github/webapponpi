@@ -23,20 +23,20 @@ void *messagehandle(void *connectfd_un)
     char buf[BUFFER_SIZE] = {0};
     while (1)
     {
-        if (recv(fd, buf, BUFFER_SIZE, 0) < 0)
+        if (recv(fd, buf, BUFFER_SIZE, 0) <= 0) // -1:error, 0:disconnect, n:recv ok
         {
-            perror("recv error!");
+            perror("Recv Error or Disconnect");
             break;
         }
 
         buf[BUFFER_SIZE - 1] = 0;
-        printf("--------------received: %s.\n", buf);
+        printf("------Received: %s.\n", buf);
 
         char *echo = "{\"res\":\"ok\"}";
-        printf("---------------sending: %s.\n", echo);
-        if (send(fd, echo, strlen(echo), 0) < 0)
+        printf("------Sending: %s.\n", echo);
+        if (send(fd, echo, strlen(echo), MSG_NOSIGNAL) < 0)
         {
-            perror("send error!");
+            perror("Send Error");
             break;
         }
     }
@@ -53,52 +53,50 @@ int main(int argc, char **argv)
     pthread_t thread;
 
     serveraddr_un.sun_family = AF_UNIX;
-    const char *unix_socket = "unix_socket";
+    const char *unix_socket = "../unix_socket";
     strcpy(serveraddr_un.sun_path, unix_socket); //strncpy min
     unlink(unix_socket);
 
     do
     {
         listenfd_un = socket(AF_UNIX, SOCK_STREAM, 0);
-        printf("create socket......\n");
+        printf("Create Socket......\n");
         if (listenfd_un < 0)
         {
-            perror("create socket error!\n");
+            perror("Create Socket Error\n");
             return -1;
         }
 
         if (bind(listenfd_un, (struct sockaddr *)&serveraddr_un, sizeof(struct sockaddr_un)) < 0)
         {
-            perror("bind error!\n");
+            perror("Bind Error\n");
             break;
         }
-        printf("bind......\n");
+        printf("Bind Socket......\n");
 
         if (listen(listenfd_un, 20) < 0)
         {
-            perror("listen error!");
+            perror("Listen Error");
             break;
         }
-        printf("listen......\n");
+        printf("Listen Port......\n");
 
         while (1)
         {
             connectfd_un = accept(listenfd_un, (struct sockaddr *)&clientaddr_un, &clientaddrlen);
-            printf("new connection for......\n");
+            printf("New Connection fd (%d)......\n", connectfd_un);
             if (connectfd_un < 0)
             {
-                perror("accept error!");
+                perror("Accept Error");
                 break;
             }
             if (pthread_create(&thread, NULL, messagehandle, &connectfd_un) < 0)
             {
-                perror("create thread error");
+                perror("Create Thread Error");
                 break;
             }
         }
-        printf("here1\n");
     } while (0);
-    printf("here2\n");
 
     unlink(unix_socket);
     close(connectfd_un);
