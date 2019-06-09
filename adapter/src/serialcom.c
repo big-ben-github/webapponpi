@@ -7,7 +7,7 @@ sem_t serial_recv_sem;
 Serial_Fd serial_fd = {0};
 
 int init_serial(Serial_Fd* serial_fd){
-	sem_init(&serial_recv_sem, 0, 2);
+	sem_init(&serial_recv_sem, 2, 0);
 	char recv_buf[100] = {0};
 	
 	if (wiringPiSetup() < 0 || (serial_fd->fd = serialOpen("/dev/ttyAMA0", 115200)) < 0)
@@ -35,7 +35,7 @@ void* serial_recv_thread(void* s_fd){
 	char ch = 0;
 	
 	while(1){
-		if((num =serialDataAvail(serial_fd->fd)) <= 0){
+		if((num =serialDataAvail(serial_fd->fd)) <= 1){
 			usleep(10000);
 			continue;
 		}

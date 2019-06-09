@@ -28,19 +28,19 @@ int send_dispatcher(char* buf){
 
 int recv_dispatcher(char* buf){
 	sem_wait(&serial_recv_sem);
+	printf("-------serial_fd.recv_message: (%s)---------\n", serial_fd.recv_message);
 	char* result;
 	//cmd parse
 	if(memcmp("ok", serial_fd.recv_message, 2) == 0){
-		result = "ok";
+		result = "{\"res\":\"ok\"}";
 	}
 	else{
-		result = "fail";
+		result = "{\"res\":\"fail\"}";
 	}
-	cJSON *root = cJSON_CreateObject();
-	cJSON_AddStringToObject(root,"result", result);
 	//message dispatch to web
-	memcpy(buf, root, 30);
-	cJSON_Delete(root);
+	memset(buf, 0, 100);
+	memcpy(buf, result, strlen(result));
+	printf("------buf: (%s)-----\n", buf);
 	return DISPATCH_OK; 
 }
 
